@@ -3,8 +3,8 @@ const express = require("express");
 // Passport docs: http://www.passportjs.org/docs/
 const passport = require("passport");
 
-// pull in Mongoose model for examples
-const Example = require("../models/example");
+// pull in Mongoose model for comments
+const Comment = require("../models/comment");
 
 // this is a collection of methods that help us detect situations when we need
 // to throw a custom error
@@ -17,7 +17,7 @@ const handle404 = customErrors.handle404;
 const requireOwnership = customErrors.requireOwnership;
 
 // this is middleware that will remove blank fields from `req.body`, e.g.
-// { example: { title: '', text: 'foo' } } -> { example: { text: 'foo' } }
+// { comment: { title: '', text: 'foo' } } -> { comment: { text: 'foo' } }
 const removeBlanks = require("../../lib/remove_blank_fields");
 // passing this as a second argument to `router.<verb>` will make it
 // so that a token MUST be passed for that route to be available
@@ -28,49 +28,49 @@ const requireToken = passport.authenticate("bearer", { session: false });
 const router = express.Router();
 
 // INDEX
-// GET /examples
-router.get("/examples", requireToken, (req, res, next) => {
-  // Option 1 get user's examples
-  Example.find({ owner: req.user.id })
-    .then(examples => res.status(200).json({ examples: examples }))
+// GET /comments
+router.get("/comments", requireToken, (req, res, next) => {
+  // Option 1 get user's comments
+  Comment.find({ owner: req.user.id })
+    .then(comments => res.status(200).json({ comments: comments }))
     .catch(next);
 
-  // // Option 2 get user's examples
-  // // must import User model and User model must have virtual for examples
+  // // Option 2 get user's comments
+  // // must import User model and User model must have virtual for comments
   // User.findById(req.user.id)
-  // .populate('examples')
-  // .then(user => res.status(200).json({ examples: user.examples }))
+  // .populate('comments')
+  // .then(user => res.status(200).json({ comments: user.comments }))
   // .catch(next)
 });
 
 // SHOW
-// GET /examples/5a7db6c74d55bc51bdf39793
-router.get("/examples/:id", requireToken, (req, res, next) => {
+// GET /comments/5a7db6c74d55bc51bdf39793
+router.get("/comments/:id", requireToken, (req, res, next) => {
   // req.params.id will be set based on the `:id` in the route
-  Example.findById(req.params.id)
+  Comment.findById(req.params.id)
     .then(handle404)
-    // if `findById` is succesful, respond with 200 and "example" JSON
-    .then(example => {
+    // if `findById` is succesful, respond with 200 and "comment" JSON
+    .then(comment => {
       // pass the `req` object and the Mongoose record to `requireOwnership`
       // it will throw an error if the current user isn't the owner
-      requireOwnership(req, example);
+      requireOwnership(req, comment);
 
-      res.status(200).json({ example: example.toObject() });
+      res.status(200).json({ comment: comment.toObject() });
     })
     // if an error occurs, pass it to the handler
     .catch(next);
 });
 
 // CREATE
-// POST /examples
-router.post("/examples", requireToken, (req, res, next) => {
-  // set owner of new example to be current user
-  req.body.example.owner = req.user.id;
+// POST /comments
+router.post("/comments", requireToken, (req, res, next) => {
+  // set owner of new comment to be current user
+  req.body.comment.owner = req.user.id;
 
-  Example.create(req.body.example)
-    // respond to succesful `create` with status 201 and JSON of new "example"
-    .then(example => {
-      res.status(201).json({ example: example.toObject() });
+  Comment.create(req.body.comment)
+    // respond to succesful `create` with status 201 and JSON of new "comment"
+    .then(comment => {
+      res.status(201).json({ comment: comment.toObject() });
     })
     // if an error occurs, pass it off to our error handler
     // the error handler needs the error message and the `res` object so that it
@@ -79,21 +79,21 @@ router.post("/examples", requireToken, (req, res, next) => {
 });
 
 // UPDATE
-// PATCH /examples/5a7db6c74d55bc51bdf39793
-router.patch("/examples/:id", requireToken, removeBlanks, (req, res, next) => {
+// PATCH /comments/5a7db6c74d55bc51bdf39793
+router.patch("/comments/:id", requireToken, removeBlanks, (req, res, next) => {
   // if the client attempts to change the `owner` property by including a new
   // owner, prevent that by deleting that key/value pair
-  delete req.body.example.owner;
+  delete req.body.comment.owner;
 
-  Example.findById(req.params.id)
+  Comment.findById(req.params.id)
     .then(handle404)
-    .then(example => {
+    .then(comment => {
       // pass the `req` object and the Mongoose record to `requireOwnership`
       // it will throw an error if the current user isn't the owner
-      requireOwnership(req, example);
+      requireOwnership(req, comment);
 
       // pass the result of Mongoose's `.update` to the next `.then`
-      return example.update(req.body.example);
+      return comment.update(req.body.comment);
     })
     // if that succeeded, return 204 and no JSON
     .then(() => res.status(204))
@@ -102,15 +102,15 @@ router.patch("/examples/:id", requireToken, removeBlanks, (req, res, next) => {
 });
 
 // DESTROY
-// DELETE /examples/5a7db6c74d55bc51bdf39793
-router.delete("/examples/:id", requireToken, (req, res, next) => {
-  Example.findById(req.params.id)
+// DELETE /comments/5a7db6c74d55bc51bdf39793
+router.delete("/comments/:id", requireToken, (req, res, next) => {
+  Comment.findById(req.params.id)
     .then(handle404)
-    .then(example => {
-      // throw an error if current user doesn't own `example`
-      requireOwnership(req, example);
-      // delete the example ONLY IF the above didn't throw
-      example.remove();
+    .then(comment => {
+      // throw an error if current user doesn't own `comment`
+      requireOwnership(req, comment);
+      // delete the comment ONLY IF the above didn't throw
+      comment.remove();
     })
     // send back 204 and no content if the deletion succeeded
     .then(() => res.sendStatus(204))
