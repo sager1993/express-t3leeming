@@ -33,7 +33,7 @@ const courseSchema = new mongoose.Schema(
   }
 );
 
-userSchema.virtual("comments", {
+courseSchema.virtual("comments", {
   ref: "Comment",
   localField: "_id",
   foreignField: "coursePage"

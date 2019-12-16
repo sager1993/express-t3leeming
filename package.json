@@ -2,7 +2,7 @@
   "name": "express-t3leeming",
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "test": "mocha --exit",
@@ -29,7 +29,7 @@
     "chai": "^4.1.2",
     "chai-http": "^3.0.0",
     "mocha": "^4.0.1",
-    "nodemon": "^1.12.1"
+    "nodemon": "^1.19.4"
   },
   "engines": {
     "node": "10.15.0",
