@@ -4,14 +4,14 @@
 
 ### courses
 
-- show all courses
-- remove require ownership to view
+<!-- - show all courses -->
+<!-- - remove require ownership to view -->
 
 ### Comments
 
-- remove ownership to view comments
-- list all comments
-- add a get for a spcific course
+<!-- - remove ownership to view comments -->
+<!-- - list all comments -->
+<!-- - add a get for a spcific course -->
 
 ## Seed command
 

@@ -29,7 +29,16 @@ const router = express.Router();
 
 // INDEX
 // GET /courses
+// View All Courses
 router.get("/courses", requireToken, (req, res, next) => {
+  Course.find()
+    .then(courses => res.status(200).json({ courses: courses }))
+    .catch(next);
+});
+
+// INDEX
+// GET /mycourses
+router.get("/mycourses", requireToken, (req, res, next) => {
   // Option 1 get user's courses
   Course.find({ owner: req.user.id })
     .then(courses => res.status(200).json({ courses: courses }))
@@ -53,7 +62,7 @@ router.get("/courses/:id", requireToken, (req, res, next) => {
     .then(course => {
       // pass the `req` object and the Mongoose record to `requireOwnership`
       // it will throw an error if the current user isn't the owner
-      requireOwnership(req, course);
+      // requireOwnership(req, course);
 
       res.status(200).json({ course: course.toObject() });
     })

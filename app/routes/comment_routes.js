@@ -29,7 +29,17 @@ const router = express.Router();
 
 // INDEX
 // GET /comments
+// View all comments
 router.get("/comments", requireToken, (req, res, next) => {
+  // Option 1 get user's comments
+  Comment.find()
+    .then(comments => res.status(200).json({ comments: comments }))
+    .catch(next);
+});
+
+// INDEX
+// GET /comments
+router.get("/mycomments", requireToken, (req, res, next) => {
   // Option 1 get user's comments
   Comment.find({ owner: req.user.id })
     .then(comments => res.status(200).json({ comments: comments }))
@@ -53,7 +63,25 @@ router.get("/comments/:id", requireToken, (req, res, next) => {
     .then(comment => {
       // pass the `req` object and the Mongoose record to `requireOwnership`
       // it will throw an error if the current user isn't the owner
-      requireOwnership(req, comment);
+      // requireOwnership(req, comment);
+
+      res.status(200).json({ comment: comment.toObject() });
+    })
+    // if an error occurs, pass it to the handler
+    .catch(next);
+});
+
+// SHOW
+// GET /course/5a7db6c74d55bc51bdf39793/comments
+router.get("/course/:courseId/comments", requireToken, (req, res, next) => {
+  // req.params.id will be set based on the `:id` in the route
+  Comment.find({ coursePage: req.params.courseId })
+    .then(handle404)
+    // if `findById` is succesful, respond with 200 and "comment" JSON
+    .then(comment => {
+      // pass the `req` object and the Mongoose record to `requireOwnership`
+      // it will throw an error if the current user isn't the owner
+      // requireOwnership(req, comment);
 
       res.status(200).json({ comment: comment.toObject() });
     })
