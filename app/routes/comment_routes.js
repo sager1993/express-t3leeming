@@ -62,10 +62,11 @@ router.get("/comments/:id", requireToken, (req, res, next) => {
 });
 
 // CREATE
-// POST /comments
-router.post("/comments", requireToken, (req, res, next) => {
+// POST /course/5a7db6c74d55bc51bdf39793/comments
+router.post("/course/:courseId/comments", requireToken, (req, res, next) => {
   // set owner of new comment to be current user
   req.body.comment.owner = req.user.id;
+  req.body.comment.coursePage = req.params.courseId;
 
   Comment.create(req.body.comment)
     // respond to succesful `create` with status 201 and JSON of new "comment"
