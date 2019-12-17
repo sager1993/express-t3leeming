@@ -1,5 +1,6 @@
 // Express docs: http://expressjs.com/en/api.html
 const express = require("express");
+
 // Passport docs: http://www.passportjs.org/docs/
 const passport = require("passport");
 
@@ -73,7 +74,7 @@ router.get("/comments/:id", requireToken, (req, res, next) => {
 
 // SHOW
 // GET /course/5a7db6c74d55bc51bdf39793/comments
-router.get("/course/:courseId/comments", requireToken, (req, res, next) => {
+router.get("/courses/:courseId/comments", requireToken, (req, res, next) => {
   // req.params.id will be set based on the `:id` in the route
   Comment.find({ coursePage: req.params.courseId })
     .then(handle404)
@@ -91,7 +92,7 @@ router.get("/course/:courseId/comments", requireToken, (req, res, next) => {
 
 // CREATE
 // POST /course/5a7db6c74d55bc51bdf39793/comments
-router.post("/course/:courseId/comments", requireToken, (req, res, next) => {
+router.post("/courses/:courseId/comments", requireToken, (req, res, next) => {
   // set owner of new comment to be current user
   req.body.comment.owner = req.user.id;
   req.body.comment.coursePage = req.params.courseId;
@@ -120,12 +121,11 @@ router.patch("/comments/:id", requireToken, removeBlanks, (req, res, next) => {
       // pass the `req` object and the Mongoose record to `requireOwnership`
       // it will throw an error if the current user isn't the owner
       requireOwnership(req, comment);
-
       // pass the result of Mongoose's `.update` to the next `.then`
       return comment.update(req.body.comment);
     })
     // if that succeeded, return 204 and no JSON
-    .then(() => res.status(204))
+    .then(() => res.status(204).end())
     // if an error occurs, pass it to the handler
     .catch(next);
 });
