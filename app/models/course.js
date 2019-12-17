@@ -8,23 +8,23 @@ const courseSchema = new mongoose.Schema(
     },
     url: {
       type: String,
-      required: true
+      default: ""
     },
     img: {
       type: String,
-      required: true
+      default: ""
     },
     language: {
       type: String,
-      required: true
+      default: ""
     },
     category: {
       type: String,
-      required: true
+      default: ""
     },
     description: {
       type: String,
-      required: true
+      default: ""
     },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
