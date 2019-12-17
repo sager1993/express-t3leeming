@@ -30,7 +30,7 @@ const router = express.Router();
 // INDEX
 // GET /courses
 // View All Courses
-router.get("/courses", requireToken, (req, res, next) => {
+router.get("/api/courses", requireToken, (req, res, next) => {
   Course.find()
     .then(courses => res.status(200).json({ courses: courses }))
     .catch(next);
@@ -38,7 +38,7 @@ router.get("/courses", requireToken, (req, res, next) => {
 
 // INDEX
 // GET /mycourses
-router.get("/mycourses", requireToken, (req, res, next) => {
+router.get("/api/mycourses", requireToken, (req, res, next) => {
   // Option 1 get user's courses
   Course.find({ owner: req.user.id })
     .then(courses => res.status(200).json({ courses: courses }))
@@ -54,7 +54,7 @@ router.get("/mycourses", requireToken, (req, res, next) => {
 
 // SHOW
 // GET /courses/5a7db6c74d55bc51bdf39793
-router.get("/courses/:id", requireToken, (req, res, next) => {
+router.get("/api/courses/:id", requireToken, (req, res, next) => {
   // req.params.id will be set based on the `:id` in the route
   Course.findById(req.params.id)
     .then(handle404)
@@ -72,7 +72,7 @@ router.get("/courses/:id", requireToken, (req, res, next) => {
 
 // CREATE
 // POST /courses
-router.post("/courses", requireToken, (req, res, next) => {
+router.post("/api/courses", requireToken, (req, res, next) => {
   // set owner of new course to be current user
   req.body.course.owner = req.user.id;
 
@@ -89,30 +89,35 @@ router.post("/courses", requireToken, (req, res, next) => {
 
 // UPDATE
 // PATCH /courses/5a7db6c74d55bc51bdf39793
-router.patch("/courses/:id", requireToken, removeBlanks, (req, res, next) => {
-  // if the client attempts to change the `owner` property by including a new
-  // owner, prevent that by deleting that key/value pair
-  delete req.body.course.owner;
+router.patch(
+  "/api/courses/:id",
+  requireToken,
+  removeBlanks,
+  (req, res, next) => {
+    // if the client attempts to change the `owner` property by including a new
+    // owner, prevent that by deleting that key/value pair
+    delete req.body.course.owner;
 
-  Course.findById(req.params.id)
-    .then(handle404)
-    .then(course => {
-      // pass the `req` object and the Mongoose record to `requireOwnership`
-      // it will throw an error if the current user isn't the owner
-      requireOwnership(req, course);
+    Course.findById(req.params.id)
+      .then(handle404)
+      .then(course => {
+        // pass the `req` object and the Mongoose record to `requireOwnership`
+        // it will throw an error if the current user isn't the owner
+        requireOwnership(req, course);
 
-      // pass the result of Mongoose's `.update` to the next `.then`
-      return course.update(req.body.course);
-    })
-    // if that succeeded, return 204 and no JSON
-    .then(() => res.status(204).end())
-    // if an error occurs, pass it to the handler
-    .catch(next);
-});
+        // pass the result of Mongoose's `.update` to the next `.then`
+        return course.update(req.body.course);
+      })
+      // if that succeeded, return 204 and no JSON
+      .then(() => res.status(204).end())
+      // if an error occurs, pass it to the handler
+      .catch(next);
+  }
+);
 
 // DESTROY
 // DELETE /courses/5a7db6c74d55bc51bdf39793
-router.delete("/courses/:id", requireToken, (req, res, next) => {
+router.delete("/api/courses/:id", requireToken, (req, res, next) => {
   Course.findById(req.params.id)
     .then(handle404)
     .then(course => {

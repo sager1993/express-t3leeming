@@ -31,7 +31,7 @@ const router = express.Router();
 // INDEX
 // GET /comments
 // View all comments
-router.get("/comments", requireToken, (req, res, next) => {
+router.get("/api/comments", requireToken, (req, res, next) => {
   // Option 1 get user's comments
   Comment.find()
     .then(comments => res.status(200).json({ comments: comments }))
@@ -40,7 +40,7 @@ router.get("/comments", requireToken, (req, res, next) => {
 
 // INDEX
 // GET /comments
-router.get("/mycomments", requireToken, (req, res, next) => {
+router.get("/api/mycomments", requireToken, (req, res, next) => {
   // Option 1 get user's comments
   Comment.find({ owner: req.user.id })
     .then(comments => res.status(200).json({ comments: comments }))
@@ -56,7 +56,7 @@ router.get("/mycomments", requireToken, (req, res, next) => {
 
 // SHOW
 // GET /comments/5a7db6c74d55bc51bdf39793
-router.get("/comments/:id", requireToken, (req, res, next) => {
+router.get("/api/comments/:id", requireToken, (req, res, next) => {
   // req.params.id will be set based on the `:id` in the route
   Comment.findById(req.params.id)
     .then(handle404)
@@ -74,65 +74,78 @@ router.get("/comments/:id", requireToken, (req, res, next) => {
 
 // SHOW
 // GET /course/5a7db6c74d55bc51bdf39793/comments
-router.get("/courses/:courseId/comments", requireToken, (req, res, next) => {
-  // req.params.id will be set based on the `:id` in the route
-  Comment.find({ coursePage: req.params.courseId })
-    .then(handle404)
-    // if `findById` is succesful, respond with 200 and "comment" JSON
-    .then(comment => {
-      // pass the `req` object and the Mongoose record to `requireOwnership`
-      // it will throw an error if the current user isn't the owner
-      // requireOwnership(req, comment);
+router.get(
+  "/api/courses/:courseId/comments",
+  requireToken,
+  (req, res, next) => {
+    // req.params.id will be set based on the `:id` in the route
+    Comment.find({ coursePage: req.params.courseId })
+      .then(handle404)
+      // if `findById` is succesful, respond with 200 and "comment" JSON
+      .then(comment => {
+        // pass the `req` object and the Mongoose record to `requireOwnership`
+        // it will throw an error if the current user isn't the owner
+        // requireOwnership(req, comment);
 
-      res.status(200).json({ comment: comment.toObject() });
-    })
-    // if an error occurs, pass it to the handler
-    .catch(next);
-});
+        res.status(200).json({ comment: comment.toObject() });
+      })
+      // if an error occurs, pass it to the handler
+      .catch(next);
+  }
+);
 
 // CREATE
 // POST /course/5a7db6c74d55bc51bdf39793/comments
-router.post("/courses/:courseId/comments", requireToken, (req, res, next) => {
-  // set owner of new comment to be current user
-  req.body.comment.owner = req.user.id;
-  req.body.comment.coursePage = req.params.courseId;
+router.post(
+  "/api/courses/:courseId/comments",
+  requireToken,
+  (req, res, next) => {
+    // set owner of new comment to be current user
+    req.body.comment.owner = req.user.id;
+    req.body.comment.coursePage = req.params.courseId;
 
-  Comment.create(req.body.comment)
-    // respond to succesful `create` with status 201 and JSON of new "comment"
-    .then(comment => {
-      res.status(201).json({ comment: comment.toObject() });
-    })
-    // if an error occurs, pass it off to our error handler
-    // the error handler needs the error message and the `res` object so that it
-    // can send an error message back to the client
-    .catch(next);
-});
+    Comment.create(req.body.comment)
+      // respond to succesful `create` with status 201 and JSON of new "comment"
+      .then(comment => {
+        res.status(201).json({ comment: comment.toObject() });
+      })
+      // if an error occurs, pass it off to our error handler
+      // the error handler needs the error message and the `res` object so that it
+      // can send an error message back to the client
+      .catch(next);
+  }
+);
 
 // UPDATE
 // PATCH /comments/5a7db6c74d55bc51bdf39793
-router.patch("/comments/:id", requireToken, removeBlanks, (req, res, next) => {
-  // if the client attempts to change the `owner` property by including a new
-  // owner, prevent that by deleting that key/value pair
-  delete req.body.comment.owner;
+router.patch(
+  "/api/comments/:id",
+  requireToken,
+  removeBlanks,
+  (req, res, next) => {
+    // if the client attempts to change the `owner` property by including a new
+    // owner, prevent that by deleting that key/value pair
+    delete req.body.comment.owner;
 
-  Comment.findById(req.params.id)
-    .then(handle404)
-    .then(comment => {
-      // pass the `req` object and the Mongoose record to `requireOwnership`
-      // it will throw an error if the current user isn't the owner
-      requireOwnership(req, comment);
-      // pass the result of Mongoose's `.update` to the next `.then`
-      return comment.update(req.body.comment);
-    })
-    // if that succeeded, return 204 and no JSON
-    .then(() => res.status(204).end())
-    // if an error occurs, pass it to the handler
-    .catch(next);
-});
+    Comment.findById(req.params.id)
+      .then(handle404)
+      .then(comment => {
+        // pass the `req` object and the Mongoose record to `requireOwnership`
+        // it will throw an error if the current user isn't the owner
+        requireOwnership(req, comment);
+        // pass the result of Mongoose's `.update` to the next `.then`
+        return comment.update(req.body.comment);
+      })
+      // if that succeeded, return 204 and no JSON
+      .then(() => res.status(204).end())
+      // if an error occurs, pass it to the handler
+      .catch(next);
+  }
+);
 
 // DESTROY
 // DELETE /comments/5a7db6c74d55bc51bdf39793
-router.delete("/comments/:id", requireToken, (req, res, next) => {
+router.delete("/api/comments/:id", requireToken, (req, res, next) => {
   Comment.findById(req.params.id)
     .then(handle404)
     .then(comment => {
