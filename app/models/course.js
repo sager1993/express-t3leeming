@@ -8,11 +8,12 @@ const courseSchema = new mongoose.Schema(
     },
     url: {
       type: String,
-      default: ""
+      default: "https://google.com"
     },
     img: {
       type: String,
-      default: ""
+      default:
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/No_image_3x4.svg/1280px-No_image_3x4.svg.png"
     },
     // language: {
     //   type: String,

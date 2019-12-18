@@ -166,12 +166,22 @@ router.delete("/api/comments/:id", requireToken, (req, res, next) => {
  * URI:         /api/comments/seed
  * Description: seed comments to the database
  */
-router.get("/api/comments/seed", (req, res) => {
+router.get("/api/courses/:courseId/comments/seed", requireToken, (req, res) => {
+  req.body.comment.owner = req.user.id;
+  req.body.comment.coursePage = req.params.courseId;
   Comment.insertMany(
     [
       {
-        title: "test comment",
-        text: "also a test"
+        title: "informative course",
+        text: "Best course ever, great website"
+      },
+      {
+        title: "I want to subscribe",
+        text: "How can I subscribe for this website, it's the best ever!"
+      },
+      {
+        title: "Genius website",
+        text: "I like how I get different courses from different websites"
       }
     ],
     (error, comments) => {
