@@ -195,6 +195,26 @@ router.get("/api/courses/seed", requireToken, (req, res) => {
   );
 });
 
+// SEARCH
+// GET /api/courses/search?q=accounting
+router.get("/api/courses/search", (req, res, next) => {
+  const search = req.query.q;
+  console.log(search);
+
+  Course.find({ title: { $regex: search, $options: "i" } })
+    .then(handle404)
+    // if `findBySearch` is succesful, respond with 200 and "courses" JSON
+    .then(courses => {
+      // pass the `req` object and the Mongoose record to `requireOwnership`
+      // it will throw an error if the current user isn't the owner
+      // requireOwnership(req, course);
+
+      res.status(200).json({ courses: courses });
+    })
+    // if an error occurs, pass it to the handler
+    .catch(next);
+});
+
 // SHOW
 // GET /courses/5a7db6c74d55bc51bdf39793
 router.get("/api/courses/:id", requireToken, (req, res, next) => {
