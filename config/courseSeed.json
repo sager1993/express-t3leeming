@@ -2,9 +2,6 @@
     "course": {
         "title": "test course",
         "url": "google.com",
-        "img": "google.com",
-        "language": "english",
-        "category": "testing",
-        "description": "i swear it's an experiment"
+        "img": "google.com"
     }
 }

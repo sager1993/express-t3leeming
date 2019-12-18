@@ -14,18 +14,18 @@ const courseSchema = new mongoose.Schema(
       type: String,
       default: ""
     },
-    language: {
-      type: String,
-      default: ""
-    },
-    category: {
-      type: String,
-      default: ""
-    },
-    description: {
-      type: String,
-      default: ""
-    },
+    // language: {
+    //   type: String,
+    //   default: ""
+    // },
+    // category: {
+    //   type: String,
+    //   default: ""
+    // },
+    // description: {
+    //   type: String,
+    //   default: ""
+    // },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

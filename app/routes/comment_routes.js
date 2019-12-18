@@ -160,4 +160,28 @@ router.delete("/api/comments/:id", requireToken, (req, res, next) => {
     .catch(next);
 });
 
+/**
+ * Action:      SEED
+ * Method:      GET
+ * URI:         /api/comments/seed
+ * Description: seed comments to the database
+ */
+router.get("/api/comments/seed", (req, res) => {
+  Comment.insertMany(
+    [
+      {
+        title: "test comment",
+        text: "also a test"
+      }
+    ],
+    (error, comments) => {
+      if (!error) {
+        res.status(200).json({ comments: comments });
+      } else {
+        res.status(500).json({ error: error });
+      }
+    }
+  );
+});
+
 module.exports = router;

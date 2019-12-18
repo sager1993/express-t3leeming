@@ -115,6 +115,31 @@ router.patch(
   }
 );
 
+/**
+ * Action:      SEED
+ * Method:      GET
+ * URI:         /api/courses/seed
+ * Description: seed courses to the database
+ */
+router.get("/api/courses/seed", (req, res) => {
+  Course.insertMany(
+    [
+      {
+        title: "my title",
+        url: "google.com",
+        img: "google.com"
+      }
+    ],
+    (error, courses) => {
+      if (!error) {
+        res.status(200).json({ courses: courses });
+      } else {
+        res.status(500).json({ error: error });
+      }
+    }
+  );
+});
+
 // DESTROY
 // DELETE /courses/5a7db6c74d55bc51bdf39793
 router.delete("/api/courses/:id", requireToken, (req, res, next) => {
