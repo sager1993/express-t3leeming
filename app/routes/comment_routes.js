@@ -38,6 +38,46 @@ router.get("/api/comments", requireToken, (req, res, next) => {
     .catch(next);
 });
 
+/**
+ * Action:      SEED
+ * Method:      GET
+ * URI:         /api/comments/seed
+ * Description: seed comments to the database
+ */
+router.get("/api/courses/:courseId/comments/seed", requireToken, (req, res) => {
+  req.body.comment.owner = req.user.id;
+  req.body.comment.coursePage = req.params.courseId;
+  Comment.insertMany(
+    [
+      {
+        title: "informative course",
+        text: "Best course ever, great website",
+        owner: req.user.id,
+        coursePage: req.params.courseId
+      },
+      {
+        title: "I want to subscribe",
+        text: "How can I subscribe for this website, it's the best ever!",
+        owner: req.user.id,
+        coursePage: req.params.courseId
+      },
+      {
+        title: "Genius website",
+        text: "I like how I get different courses from different websites",
+        owner: req.user.id,
+        coursePage: req.params.courseId
+      }
+    ],
+    (error, comments) => {
+      if (!error) {
+        res.status(200).json({ comments: comments });
+      } else {
+        res.status(500).json({ error: error });
+      }
+    }
+  );
+});
+
 // INDEX
 // GET /comments
 router.get("/api/mycomments", requireToken, (req, res, next) => {
@@ -158,40 +198,6 @@ router.delete("/api/comments/:id", requireToken, (req, res, next) => {
     .then(() => res.sendStatus(204))
     // if an error occurs, pass it to the handler
     .catch(next);
-});
-
-/**
- * Action:      SEED
- * Method:      GET
- * URI:         /api/comments/seed
- * Description: seed comments to the database
- */
-router.get("/api/courses/:courseId/comments/seed", requireToken, (req, res) => {
-  req.body.comment.owner = req.user.id;
-  req.body.comment.coursePage = req.params.courseId;
-  Comment.insertMany(
-    [
-      {
-        title: "informative course",
-        text: "Best course ever, great website"
-      },
-      {
-        title: "I want to subscribe",
-        text: "How can I subscribe for this website, it's the best ever!"
-      },
-      {
-        title: "Genius website",
-        text: "I like how I get different courses from different websites"
-      }
-    ],
-    (error, comments) => {
-      if (!error) {
-        res.status(200).json({ comments: comments });
-      } else {
-        res.status(500).json({ error: error });
-      }
-    }
-  );
 });
 
 module.exports = router;

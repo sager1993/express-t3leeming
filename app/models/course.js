@@ -23,10 +23,10 @@ const courseSchema = new mongoose.Schema(
     //   type: String,
     //   default: ""
     // },
-    // description: {
-    //   type: String,
-    //   default: ""
-    // },
+    description: {
+      type: String,
+      default: ""
+    },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
