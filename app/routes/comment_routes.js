@@ -102,6 +102,8 @@ router.get("/api/comments/:id", requireToken, (req, res, next) => {
     .then(handle404)
     // if `findById` is succesful, respond with 200 and "comment" JSON
     .then(comment => {
+      console.log("comm:", comment);
+
       // pass the `req` object and the Mongoose record to `requireOwnership`
       // it will throw an error if the current user isn't the owner
       // requireOwnership(req, comment);
@@ -116,7 +118,7 @@ router.get("/api/comments/:id", requireToken, (req, res, next) => {
 // GET /course/5a7db6c74d55bc51bdf39793/comments
 router.get(
   "/api/courses/:courseId/comments",
-  requireToken,
+
   (req, res, next) => {
     // req.params.id will be set based on the `:id` in the route
     Comment.find({ coursePage: req.params.courseId })
@@ -127,7 +129,7 @@ router.get(
         // it will throw an error if the current user isn't the owner
         // requireOwnership(req, comment);
 
-        res.status(200).json({ comment: comment.toObject() });
+        res.status(200).json(comment);
       })
       // if an error occurs, pass it to the handler
       .catch(next);
